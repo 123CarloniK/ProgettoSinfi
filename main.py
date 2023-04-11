@@ -9,6 +9,7 @@ from arcpy import env
 from lato_posa import main_excel
 import Transetti
 import cardinalita
+import out_elab
 
 config = ConfigParser()
 # get the path to config.ini
@@ -29,8 +30,15 @@ try:
     tab_route = config.get('data-input', 'tab_route')
     route_bin_c = config.get('data-input','route')
     bin_c = config.get('data-input','binari')
+    coord_sys= config.get('data-input','coord_sys')
+    #feauture dataset di output in base alla distanza di ricerca
+    out_gdb = config.get('data-input', 'out_gdb')
+    dist = config.get('data-input', 'search_distance')
+    fdata="Dati_" + dist
+    fgdb = str(out_gdb+ '\\' + fdata)
     env.workspace = gdb
     env.overwriteOutput = True
+
     logging.info('**** INIZIO Elaborazione tabella CSV ****')
 
     # Elaborazione del CSV proveniente da INE
@@ -74,7 +82,11 @@ try:
     bin_c1= arcpy.management.SelectLayerByAttribute(bin_c,"NEW_SELECTION","S16000_0010 = '2' Or S16000_0010 = '3'",None)
 
     # Eseguo il join con i binari di corsa e la sua route
+    # route join binari
     j_bin_route = arcpy.management.AddJoin(route_bin_c, "SETE", bin_c1, "SEDE_TECNICA", "KEEP_ALL")
+    # binari join route
+    #j_bin_route = arcpy.management.AddJoin(bin_c1, "SEDE_TECNICA",route_bin_c, "SETE", "KEEP_ALL")
+
     arcpy.conversion.FeatureClassToFeatureClass(j_bin_route, gdb, "j_bin_route", "", )
 
     #dissolve delle sede tecniche per evitare errori nella generazione dei cavidotti
@@ -89,7 +101,8 @@ try:
     # Cancellla se risolto verifica con cosa viene creata la route
     arcpy.conversion.FeatureClassToFeatureClass(V_16000_join_Route, gdb, "V_16000_join_Route", "", )
     # Creo la route
-    route= arcpy.lr.CreateRoutes( V_16000_join_Route,"tab_route.Sede_Tecnica_MUIF","Route","TWO_FIELDS","tab_route.Punto_iniziale_SI","tab_route.Punto_finale_SI","UPPER_LEFT",1,0,"IGNORE","INDEX")
+    route= arcpy.lr.CreateRoutes(V_16000_join_Route,"tab_route.Sede_Tecnica_MUIF","Route","TWO_FIELDS","tab_route.Punto_iniziale_SI","tab_route.Punto_finale_SI","UPPER_LEFT",1,0,"IGNORE","INDEX")
+    logging.info('Ho generato la nuova route\n')
     #arcpy.conversion.ExportFeatures(route, out_features="route_")
 
     #Creo i cavidotti
@@ -102,11 +115,20 @@ try:
 
     # Salvo i cavidotti
     arcpy.conversion.FeatureClassToFeatureClass(cavidotti, gdb,"Cavidotti","",)
-    logging.info('**** Genero i Transetti ****')
+    logging.info('Ho generato i cavidotti\n')
+    # Salvo i cavidotti longitudinali con sede tecnica e distanza dist
+    arcpy.management.CreateFeatureDataset(out_gdb,fdata,coord_sys)
+    cavidotti_dist= "Cavidotti_long" + dist
+    arcpy.conversion.FeatureClassToFeatureClass(cavidotti, fgdb, cavidotti_dist, "",)
+    logging.info(' Ho salvato i cavidotti longitudinali a distanza {}\n'.format(dist))
+
+    logging.info('**** Entro nel modulo generazione Transetti ****')
 
     Transetti.transetti()
     logging.info('**** Ripulisco i Transetti con cardinalità maggiore di uno ****')
     cardinalita.cardi()
+    out_elab.out()
+
     logging.info('**** FINE Elaborazione GIS ****')
 
     logging.info('**** Ho terminato lo script ****')

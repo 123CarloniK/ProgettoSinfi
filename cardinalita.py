@@ -23,11 +23,17 @@ def cardi():
         pozzetti_V2 = config.get('data-input','pozzetti_V2')
         transetti = config.get('data-input','transetti')
         tran_card1 = "tran_card1"
-
+        gdb_tr= config.get('data-input','gdb_tr')
         # Variabili
         out_pozzetti = "pozzetti_inter"
         out_transetti = "out_transetti"
         transetti_sort2 = "transetti_sort2"
+        # feauture dataset di output in base alla distanza di ricerca
+        out_gdb = config.get('data-input', 'out_gdb')
+        dist = config.get('data-input', 'search_distance')  # verificare distanze
+        arcpy.env.overwriteOutput = True
+        fdata = "Dati_" + dist
+        fgdb = str(out_gdb + '\\' + fdata)
         #
         env.workspace = path
         env.overwriteOutput = True
@@ -149,6 +155,11 @@ def cardi():
                 arcpy.management.Delete(in_data=fc)
 
         logging.info('**** Ho terminato lo script ****')
+
+        dist = str(dist)
+        transetti_dist = "Transetti" + dist
+        arcpy.conversion.FeatureClassToFeatureClass(gdb_tr + "\\Transetti", fgdb, transetti_dist, "", )
+
     except Exception as e:
         logging.error("!!! Lo script si e' interrotto !!!", exc_info=True)
 
