@@ -1,0 +1,25 @@
+07-04-23 17:08:52 - INFO - **** Ho iniziato lo script ****
+07-04-23 17:08:52 - INFO - **** INIZIO Elaborazione tabella CSV ****
+07-04-23 17:08:52 - INFO - Sono entrato nel modulo determina lato posa
+
+07-04-23 17:09:04 - INFO - **** Ho creato il CSV per l"event table **** 
+
+07-04-23 17:09:04 - INFO - **** FINE Elaborazione tabella CSV **** INIZIO Elaborazione GIS **** 
+
+07-04-23 17:11:11 - INFO - **** Genero i Transetti ****
+07-04-23 17:11:11 - INFO - **** Ho iniziato lo script TRANSETTI ****
+07-04-23 17:11:13 - INFO - Ho generato i vertici
+07-04-23 17:12:24 - INFO - Ho generato i transetti per sede tecnica
+07-04-23 17:12:28 - INFO - Ho unito i transetti chilometrica e sede tecnica
+07-04-23 17:12:29 - INFO - ho eliminati i transetti sofrapposti ai cavidotti
+07-04-23 17:12:33 - INFO - Ho generato i transetti per NEAR_Y
+07-04-23 17:12:34 - INFO - Ho unito i transetti
+07-04-23 17:12:36 - INFO - Ho cancellato i transetti identici geometricamente
+07-04-23 17:12:36 - INFO - **** Ripulisco i Transetti con cardinalità maggiore di uno ****
+07-04-23 17:12:36 - INFO - **** Ho cominciato lo script CARDINALITA ****
+07-04-23 17:14:51 - INFO - Abbiamo 0 transetti con cardinalita' 1 e 185 con cardinalita' superiore
+07-04-23 17:15:00 - INFO - Il totale dei transetti è 168
+07-04-23 17:15:01 - INFO - Ho rigenerato i pozzetti sono 336
+07-04-23 17:15:01 - INFO - **** Ho terminato lo script ****
+07-04-23 17:15:01 - INFO - **** FINE Elaborazione GIS ****
+07-04-23 17:15:01 - INFO - **** Ho terminato lo script ****
