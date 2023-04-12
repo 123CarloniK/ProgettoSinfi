@@ -1,10 +1,39 @@
-11-04-23 16:24:38 - INFO - **** Ho iniziato lo script ****
-11-04-23 16:24:38 - INFO - **** INIZIO Elaborazione tabella CSV ****
-11-04-23 16:24:39 - INFO - Sono entrato nel modulo determina lato posa
+12-04-23 16:41:55 - INFO - **** Ho iniziato lo script ****
+12-04-23 16:41:55 - INFO - **** INIZIO Elaborazione tabella CSV ****
+12-04-23 16:41:55 - INFO - Sono entrato nel modulo determina lato posa
 
-11-04-23 16:24:46 - INFO - **** Ho creato il CSV per l"event table **** 
+12-04-23 16:42:02 - INFO - **** Ho creato il CSV per l"event table **** 
 
-11-04-23 16:24:46 - INFO - **** FINE Elaborazione tabella CSV **** INIZIO Elaborazione GIS **** 
+12-04-23 16:42:02 - INFO - **** FINE Elaborazione tabella CSV **** INIZIO Elaborazione GIS **** 
 
-11-04-23 16:25:01 - INFO - Ho generato la nuova route
+12-04-23 16:42:17 - INFO - Ho generato la nuova route
 
+12-04-23 16:43:37 - INFO - Ho generato i cavidotti
+12-04-23 16:43:39 - INFO -  Ho salvato i cavidotti longitudinali a distanza --> 70 m
+12-04-23 16:43:39 - INFO - **** Entro nel modulo generazione Transetti ****
+
+12-04-23 16:43:39 - INFO - **** Ho iniziato lo script TRANSETTI ****
+12-04-23 16:43:41 - INFO - Ho generato i vertici
+12-04-23 16:44:54 - INFO - Ho generato i transetti per sede tecnica
+12-04-23 16:44:58 - INFO - Ho unito i transetti chilometrica e sede tecnica
+12-04-23 16:44:59 - INFO - ho eliminati i transetti sovrapposti ai cavidotti
+12-04-23 16:45:03 - INFO - Ho generato i transetti per NEAR_Y
+12-04-23 16:45:04 - INFO - Ho unito i transetti
+12-04-23 16:45:07 - INFO - Ho cancellato i transetti identici geometricamente
+12-04-23 16:45:07 - INFO - **** Ripulisco i Transetti con cardinalità maggiore di uno ****
+12-04-23 16:45:07 - INFO - **** Ho cominciato lo script CARDINALITA ****
+12-04-23 16:46:37 - INFO - Abbiamo 0 transetti con cardinalita' 1 e 152 con cardinalita' superiore
+12-04-23 16:46:44 - INFO - Il totale dei transetti è 136
+12-04-23 16:46:44 - INFO - Ho rigenerato i pozzetti sono 272
+12-04-23 16:46:45 - INFO - **** Ho terminato lo script ****
+12-04-23 16:46:46 - INFO - **** Ho terminato lo script CARDINALITA ****
+
+12-04-23 16:46:46 - INFO - **** Sono entrato nel Modulo OUTPUT ****
+12-04-23 16:46:47 - INFO - Il totale dei transetti e" 5660
+12-04-23 16:46:47 - INFO - Il totale dei cavidotti longitudinali e" 9349
+12-04-23 16:46:47 - INFO - Il totale dei cavidotti e" 15009
+12-04-23 16:46:47 - INFO - Ho generato i Cavidotti - unione di Transetti e Cavidotti longitudinali
+12-04-23 16:46:49 - INFO - Il totale pozzetti di attraversamento e" 4982
+12-04-23 16:46:49 - INFO - Ho generato i Pozzetti di Attraversamento - Intersezione tra Transetti e Route
+12-04-23 16:46:49 - INFO - **** FINE Elaborazione GIS ****
+12-04-23 16:46:49 - INFO - **** Ho terminato lo script ****

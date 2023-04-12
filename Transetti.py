@@ -2,7 +2,7 @@ import arcpy
 import os
 from configparser import ConfigParser
 import logging
-def transetti():
+def transetti_fun(gdb, gdb_tr,pozzetti,cavidotti,route,dist,out_gdb):
     config = ConfigParser()
     # get the path to config.ini
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
@@ -11,17 +11,8 @@ def transetti():
     #logging
     logging.basicConfig(filename='app.log', filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%m-%y %H:%M:%S', level=logging.INFO)
     logging.info('**** Ho iniziato lo script TRANSETTI ****')
-
-    # Dati di input
-    gdb = config.get('data-input','gdb')
-    gdb_tr = config.get('data-input','gdb_tr')
-    cavidotti = config.get('data-input','cavidotti')
-    pozzetti = config.get('data-input','pozzetti')
-    route = config.get('data-input','route_new')
-    # feauture dataset di output in base alla distanza di ricerca
-    out_gdb = config.get('data-input', 'out_gdb')
-    dist = config.get('data-input','search_distance') #verificare distanze
     arcpy.env.overwriteOutput = True
+    # Dati di input
     fdata = "Dati_" + dist
     fgdb = str(out_gdb + '\\' + fdata)
 
@@ -33,7 +24,6 @@ def transetti():
     logging.info('Ho generato i vertici')
 
     # Salvo i vertici per la distanza dist
-
 
     #creo campi near
     arcpy.analysis.Near(pozzetti, route, None, "LOCATION", "ANGLE", "PLANAR", "NEAR_FID NEAR_FID;NEAR_DIST NEAR_DIST;NEAR_X NEAR_X;NEAR_Y NEAR_Y;NEAR_ANGLE NEAR_ANGLE","")
@@ -53,12 +43,8 @@ def transetti():
     # Genero i transetti in base alla chilometrica inizio fine
     trv2 = arcpy.analysis.GenerateOriginDestinationLinks(pozzetti_v2,pozzetti_v2,gdb_tr+"\\Transetti_V2", "Punto_iniziale_SI","Punto_finale_SI", "PLANAR", 1, dist, "METERS", "NO_AGGREGATE", None)
     # Unisco i transetti V1 e V2
-    arcpy.management.Merge(
-        inputs=r"'C:\MUIF\SINFI\NUOVA SOLUZIONE_CAVIDOTTI\Prj_gis\Cavidotti\Transetti.gdb\Transetti_V1';'C:\MUIF\SINFI\NUOVA SOLUZIONE_CAVIDOTTI\Prj_gis\Cavidotti\Transetti.gdb\Transetti_V2'",
-        output=gdb_tr+"\\Transetti_V1_V2",
-        field_mappings='Shape_Length "Shape_Length" false true true 8 Double 0 0,First,#,Transetti_v1,Shape_Length,-1,-1,Transetti_v2,Shape_Length,-1,-1;ORIG_FID "ORIG_FID" true true false 4 Long 0 0,First,#,Transetti_v1,ORIG_FID,-1,-1,Transetti_v2,ORIG_FID,-1,-1;ORIG_X "ORIG_X" true true false 8 Double 0 0,First,#,Transetti_v1,ORIG_X,-1,-1,Transetti_v2,ORIG_X,-1,-1;ORIG_Y "ORIG_Y" true true false 8 Double 0 0,First,#,Transetti_v1,ORIG_Y,-1,-1,Transetti_v2,ORIG_Y,-1,-1;DEST_FID "DEST_FID" true true false 4 Long 0 0,First,#,Transetti_v1,DEST_FID,-1,-1,Transetti_v2,DEST_FID,-1,-1;DEST_X "DEST_X" true true false 8 Double 0 0,First,#,Transetti_v1,DEST_X,-1,-1,Transetti_v2,DEST_X,-1,-1;DEST_Y "DEST_Y" true true false 8 Double 0 0,First,#,Transetti_v1,DEST_Y,-1,-1,Transetti_v2,DEST_Y,-1,-1;LINK_DIST "LINK_DIST" true true false 8 Double 0 0,First,#,Transetti_v1,LINK_DIST,-1,-1,Transetti_v2,LINK_DIST,-1,-1;GROUP_ID "GROUP_ID" true true false 5000 Text 0 0,First,#,Transetti_v1,GROUP_ID,0,5000,Transetti_v2,GROUP_ID,-1,-1;COLOR_ID "COLOR_ID" true true false 4 Long 0 0,First,#,Transetti_v1,COLOR_ID,-1,-1,Transetti_v2,COLOR_ID,-1,-1',
-        add_source="NO_SOURCE_INFO"
-    )
+    input_transetti=[trv1,trv2]
+    arcpy.management.Merge(input_transetti,gdb_tr+"\\Transetti_V1_V2","NO_SOURCE_INFO")
     logging.info('Ho unito i transetti chilometrica e sede tecnica')
 
     elimina = arcpy.management.SelectLayerByLocation(gdb_tr+"\\Transetti_V1_V2","SHARE_A_LINE_SEGMENT_WITH",cavidotti,None,"NEW_SELECTION","NOT_INVERT")
@@ -81,10 +67,5 @@ def transetti():
 
     arcpy.management.DeleteRows(
         in_rows= arcpy.management.SelectLayerByLocation(gdb_tr+"\\Transetti","SHARE_A_LINE_SEGMENT_WITH",cavidotti,None,"NEW_SELECTION","NOT_INVERT"))
-    arcpy.management.DeleteIdentical(
-        in_dataset=gdb_tr+"\\Transetti",
-        fields="Shape",
-        xy_tolerance=None,
-        z_tolerance=0
-    )
+    arcpy.management.DeleteIdentical(gdb_tr+"\\Transetti","Shape",None,0)
     logging.info('Ho cancellato i transetti identici geometricamente')

@@ -7,9 +7,9 @@ from configparser import ConfigParser
 import logging
 from arcpy import env
 from lato_posa import main_excel
-import Transetti
-import cardinalita
-import out_elab
+from Transetti import transetti_fun
+from cardinalita import cardi
+from out_elab import out
 
 config = ConfigParser()
 # get the path to config.ini
@@ -24,6 +24,10 @@ try:
     # Dati di input
     path = config.get('data-input','path')
     gdb = config.get('data-input','gdb')
+    gdb_tr = config.get('data-input', 'gdb_tr')
+    pozzetti = config.get('data-input', 'pozzetti')
+    cavidotti = config.get('data-input', 'cavidotti')
+    route = config.get('data-input', 'route_new')
     dati_ine = config.get('data-input','csv')
     lato_posa = config.get('data-input','lato_posa')
     tab_lato = config.get('data-input','tab_lato')
@@ -36,6 +40,8 @@ try:
     dist = config.get('data-input', 'search_distance')
     fdata="Dati_" + dist
     fgdb = str(out_gdb+ '\\' + fdata)
+    transetti = fgdb + "\\Transetti" + dist
+    cavidotti_longitudinali = fgdb + "\\Cavidotti_long" + dist
     env.workspace = gdb
     env.overwriteOutput = True
 
@@ -115,20 +121,18 @@ try:
 
     # Salvo i cavidotti
     arcpy.conversion.FeatureClassToFeatureClass(cavidotti, gdb,"Cavidotti","",)
-    logging.info('Ho generato i cavidotti\n')
+    logging.info('Ho generato i cavidotti')
     # Salvo i cavidotti longitudinali con sede tecnica e distanza dist
     arcpy.management.CreateFeatureDataset(out_gdb,fdata,coord_sys)
     cavidotti_dist= "Cavidotti_long" + dist
     arcpy.conversion.FeatureClassToFeatureClass(cavidotti, fgdb, cavidotti_dist, "",)
-    logging.info(' Ho salvato i cavidotti longitudinali a distanza {}\n'.format(dist))
+    logging.info(' Ho salvato i cavidotti longitudinali a distanza --> {} m'.format(dist))
 
-    logging.info('**** Entro nel modulo generazione Transetti ****')
-
-    Transetti.transetti()
+    logging.info('**** Entro nel modulo generazione Transetti ****\n')
+    transetti_fun(gdb,gdb_tr,pozzetti,cavidotti,route,dist,out_gdb)
     logging.info('**** Ripulisco i Transetti con cardinalità maggiore di uno ****')
-    cardinalita.cardi()
-    out_elab.out()
-
+    cardi(gdb,gdb_tr,out_gdb,dist)
+    out(transetti,cavidotti_longitudinali,gdb,out_gdb,dist)
     logging.info('**** FINE Elaborazione GIS ****')
 
     logging.info('**** Ho terminato lo script ****')
